@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carbon Footprint Calculator</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <header>
+        <h1>Carbon Footprint Calculator</h1>
+    </header>
+    <section class="calculator">
+        <h2>Calculate Your Carbon Footprint</h2>
+        <form id="carbonCalculator">
+            <label for="electricityUsage">Electricity Usage (kWh/year):</label>
+            <input type="number" id="electricityUsage" required>
+
+            <label for="transportationMiles">Transportation Miles (per year):</label>
+            <input type="number" id="transportationMiles" required>
+
+            <label for="carbonOffset">Carbon Offset (tons/year):</label>
+            <input type="number" id="carbonOffset" required>
+
+            <button type="button" id="calculateButton" onclick="calculateCarbonFootprint()">Calculate</button>
+            
+            <!-- Pie chart canvas within the "Calculate Your Carbon Footprint" section -->
+            <canvas id="carbonPieChart" width="200" height="200"></canvas>
+            
+            <!-- Line chart canvas with the same size as the pie chart -->
+            <canvas id="carbonLineChart" width="200" height="200"></canvas>
+        </form>
+        <div id="result" class="hidden">
+            <h3>Your Carbon Footprint:</h3>
+            <p id="carbonFootprint"></p>
+        </div>
+    </section>
+
+    <section class="calculator">
+        <h2>Incentive Calculator</h2>
+        <label for="carbonOffsetIncentive">Carbon Offset (tons/year):</label>
+        <input type="number" id="carbonOffsetIncentive" min="0" step="0.01" placeholder="Enter carbon offset">
+        <button onclick="calculateIncentive()">Calculate Incentive</button>
+        <p id="incentiveResult"></p>
+    </section>
+    
+    <script>
+        // Fake data for months from January to September
+        const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September"];
+        const data = [12, 19, 3, 5, 2, 3, 10, 8, 6]; // Replace with your data values for each month
+
+        const ctx = document.getElementById("monthlyDataChart").getContext("2d");
+
+        // Create the chart
+        new Chart(ctx, {
+            type: "bar",
+            data: {
+                labels: months,
+                datasets: [{
+                    label: "Monthly Data",
+                    data: data,
+                    backgroundColor: "rgba(75, 192, 192, 0.2)",
+                    borderColor: "rgba(75, 192, 192, 1)",
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+    <script>
+        function calculateCarbonFootprint() {
+            const electricityUsage = parseFloat(document.getElementById("electricityUsage").value);
+            const transportationMiles = parseFloat(document.getElementById("transportationMiles").value);
+            const carbonOffset = parseFloat(document.getElementById("carbonOffset").value);
+
+            const totalCarbonFootprint = electricityUsage + (transportationMiles * 0.5) - carbonOffset;
+
+            const carbonFootprintDisplay = document.getElementById("carbonFootprint");
+            carbonFootprintDisplay.textContent = `${totalCarbonFootprint.toFixed(2)} tons/year`;
+
+            const resultSection = document.getElementById("result");
+            resultSection.style.display = "block";
+
+            // Update the pie chart within the same section
+            updatePieChart(electricityUsage, transportationMiles, carbonOffset);
+            
+            // Update the line chart within the same section
+            updateLineChart(months, data);
+        }
+
+        function updatePieChart(electricityUsage, transportationMiles, carbonOffset) {
+            const ctx = document.getElementById("carbonPieChart").getContext("2d");
+            const chartData = {
+                labels: ["Electricity", "Transportation", "Carbon Offset"],
+                datasets: [
+                    {
+                        data: [electricityUsage, transportationMiles * 0.5, carbonOffset],
+                        backgroundColor: ["rgba(255, 99, 132, 0.5)", "rgba(54, 162, 235, 0.5)", "rgba(255, 206, 86, 0.5)"],
+                        borderColor: ["rgba(255, 99, 132, 1)", "rgba(54, 162, 235, 1)", "rgba(255, 206, 86, 1)"],
+                        borderWidth: 1,
+                    },
+                ],
+            };
+
+            const chartOptions = {
+                responsive: false, // Disable responsiveness
+                maintainAspectRatio: false, // Disable aspect ratio
+                legend: {
+                    position: "top",
+                },
+            };
+
+            new Chart(ctx, {
+                type: "pie",
+                data: chartData,
+                options: chartOptions,
+            });
+        }
+
+        function updateLineChart(labels, data) {
+            const ctx = document.getElementById("carbonLineChart").getContext("2d");
+            const chartData = {
+                labels: labels,
+                datasets: [{
+                    label: "Monthly Data",
+                    data: data,
+                    fill: false,
+                    borderColor: "rgba(75, 192, 192, 1)",
+                    borderWidth: 2,
+                    pointBackgroundColor: "rgba(75, 192, 192, 1)"
+                }]
+            };
+
+            const chartOptions = {
+                responsive: false, // Disable responsiveness
+                maintainAspectRatio: false, // Disable aspect ratio
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            };
+
+            new Chart(ctx, {
+                type: "line",
+                data: chartData,
+                options: chartOptions,
+            });
+        }
+
+        function calculateIncentive() {
+            const carbonOffset = parseFloat(document.getElementById("carbonOffsetIncentive").value);
+
+            // Define the incentive rate per ton of carbon offset
+            const incentiveRate = 50; // Example: $50 per ton
+
+            // Calculate the incentive
+            const incentiveAmount = carbonOffset * incentiveRate;
+
+            // Display the incentive result
+            const incentiveResultElement = document.getElementById("incentiveResult");
+            incentiveResultElement.textContent = `You qualify for an incentive of $${incentiveAmount.toFixed(2)}`;
+        }
+    </script>
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: rgb(23,0,36);
+background: linear-gradient(180deg, rgba(23,0,36,1) 0%, rgba(18,220,58,1) 0%, rgba(18,125,221,1) 45%, rgba(18,125,222,1) 85%, rgba(17,129,223,1) 100%, rgba(0,212,255,1) 100%);
+}
+
+header {
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 1rem 0;
+}
+
+h1 {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.calculator {
+    background-color: #fff;
+    margin: 2rem;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    border: 2px solid #ccc;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 1.2rem;
+    color: #555;
+}
+
+input[type="number"] {
+    width: 100%;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    background-color: #f9f9f9;
+}
+
+button {
+    background-color: #008CBA;
+    color: #fff;
+    border: none;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 1.2rem;
+}
+
+button:hover {
+    background-color: #005F7F;
+}
+
+#result {
+    margin-top: 1rem;
+    display: none;
+    border: 2px solid #ccc;
+    padding: 1rem;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+.hidden {
+    display: none;
+}
+
+h2 {
+    font-size: 1.5rem;
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+h3 {
+    font-size: 1.3rem;
+    color: #555;
+    margin-top: 1rem;
+}
+
+p {
+    font-size: 1.2rem;
+    color: #333;
+}
+
+/* CSS for aligning the bar chart to the right of the pie chart */
+#monthlyDataChart {
+    float: right;
+    margin-top: 2rem;
+    margin-right: 2rem;
+}
+    </style>
+</body>
+
+</html>

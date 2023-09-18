@@ -1,0 +1,6 @@
+.body {
+  background-image: url("carbonfootprint.jpeg");
+  background-size: cover;
+  background-repeat: no-repeat; /* Prevents the image from repeating */
+}
+font-family: "Karla", sans-serif;
